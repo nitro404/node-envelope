@@ -1,0 +1,32 @@
+{
+  "name": "node-envelope",
+  "version": "1.0.0",
+  "description": "A wrapper for the request module to allow for simpler RESTful API transactions.",
+  "main": "src/envelope.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nitro404/envelope.git"
+  },
+  "keywords": [
+    "request",
+    "envelope",
+    "json",
+    "rest",
+    "api"
+  ],
+  "author": {
+    "name": "Kevin Scroggins"
+  },
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nitro404/envelope/issues"
+  },
+  "homepage": "https://github.com/nitro404/envelope#readme",
+  "dependencies": {
+    "extra-utilities": "^1.1.0",
+    "request": "^2.83.0"
+  }
+}
