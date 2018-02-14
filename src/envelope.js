@@ -8,7 +8,7 @@ var validMethods = ["HEAD", "GET", "POST", "PUT", "PATCH", "DELETE"]
 var defaultOptions = {
 	baseUrl: null,
 	authorization: null,
-	timeout: 30000,
+	timeout: 30000
 };
 
 envelope.getBaseUrl = function() {
@@ -95,6 +95,10 @@ envelope.request = function(method, path, data, query, options, callback) {
 		throw new Error("Missing or invalid callback function!");
 	}
 
+	if(utilities.isEmptyString(method)) {
+		return callback(new Error("Missing or invalid method type: \"" + method + "\"."));
+	}
+
 	var formattedMethod = method.toUpperCase().trim();
 	var isUpload = formattedMethod === "UPLOAD";
 
@@ -112,12 +116,12 @@ envelope.request = function(method, path, data, query, options, callback) {
 	}
 
 	if(!validMethod) {
-		return callback(new Error("Invalid API method type: \"" + formattedMethod + "\" - expected one of: " + validMethods.join(", ") + "."));
+		return callback(new Error("Invalid method type: \"" + formattedMethod + "\" - expected one of: " + validMethods.join(", ") + "."));
 	}
 
 	var hasBody = formattedMethod === "POST" ||
-					formattedMethod === "PUT" ||
-					formattedMethod === "PATCH";
+				  formattedMethod === "PUT" ||
+				  formattedMethod === "PATCH";
 
 	if(utilities.isValid(data) && !hasBody) {
 		options = query;
