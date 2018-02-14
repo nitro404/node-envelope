@@ -13,8 +13,10 @@ A wrapper for the request module to allow for simpler RESTful API transactions.
 ```javascript
 var envelope = require("node-envelope");
 
+envelope.setBaseUrl("http://127.0.0.1:3000");
+
 envelope.get(
-	"http://127.0.0.1:3000/status",
+	"status",
 	function(error, result) {
 		if(error) {
 			return console.error(error);

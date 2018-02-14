@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nitro404/envelope.git"
+    "url": "git+https://github.com/nitro404/node-envelope.git"
   },
   "keywords": [
     "request",
@@ -22,9 +22,9 @@
   },
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/nitro404/envelope/issues"
+    "url": "https://github.com/nitro404/node-envelope/issues"
   },
-  "homepage": "https://github.com/nitro404/envelope#readme",
+  "homepage": "https://github.com/nitro404/node-envelope#readme",
   "dependencies": {
     "extra-utilities": "^1.1.0",
     "request": "^2.83.0"
