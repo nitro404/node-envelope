@@ -1,6 +1,6 @@
 {
   "name": "node-envelope",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A wrapper for the request module to allow for simpler RESTful API transactions.",
   "main": "src/envelope.js",
   "scripts": {
