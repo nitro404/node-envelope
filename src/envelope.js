@@ -64,11 +64,6 @@ envelope.getTimeout = function() {
 };
 
 envelope.setTimeout = function(timeout) {
-	if(timeout === null) {
-		defaultOptions.timeout = null;
-		return;
-	}
-
 	var formattedTimeout = utilities.parseInteger(timeout);
 
 	if(utilities.isInvalidNumber(formattedTimeout) || formattedTimeout < 1) {
