@@ -73,6 +73,10 @@ envelope.setTimeout = function(timeout) {
 	defaultOptions.timeout = formattedTimeout;
 };
 
+envelope.clearTimeout = function() {
+	defaultOptions.timeout = null;
+};
+
 envelope.request = function(method, path, data, query, options, callback) {
 	if(utilities.isFunction(data)) {
 		callback = data;
