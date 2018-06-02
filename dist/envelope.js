@@ -11,6 +11,10 @@ var defaultOptions = {
 	timeout: 30000
 };
 
+envelope.hasBaseUrl = function() {
+	return utilities.isNonEmptyString(defaultOptions.baseUrl);
+};
+
 envelope.getBaseUrl = function() {
 	return defaultOptions.baseUrl;
 };
@@ -27,12 +31,12 @@ envelope.clearBaseUrl = function() {
 	defaultOptions.baseUrl = null;
 };
 
-envelope.getAuthorization = function() {
-	return defaultOptions.authorization;
-};
-
 envelope.hasAuthorization = function() {
 	return utilities.isNonEmptyString(defaultOptions.authorization);
+};
+
+envelope.getAuthorization = function() {
+	return defaultOptions.authorization;
 };
 
 envelope.setAuthorizationToken = function(token) {
@@ -44,7 +48,7 @@ envelope.setAuthorizationToken = function(token) {
 envelope.setBasicAuthorization = function(userName, password) {
 	if(utilities.isEmptyString(userName) || utilities.isEmptyString(password)) { return; }
 
-	defaultOptions.authorization = "Basic " + btoa(userName + ":" + password);
+	defaultOptions.authorization = "Basic " + Buffer.from(userName + ":" + password).toString("base64");
 };
 
 envelope.clearAuthorization = function() {
@@ -60,11 +64,6 @@ envelope.getTimeout = function() {
 };
 
 envelope.setTimeout = function(timeout) {
-	if(timeout === null) {
-		defaultOptions.timeout = null;
-		return;
-	}
-
 	var formattedTimeout = utilities.parseInteger(timeout);
 
 	if(utilities.isInvalidNumber(formattedTimeout) || formattedTimeout < 1) {
@@ -72,6 +71,10 @@ envelope.setTimeout = function(timeout) {
 	}
 
 	defaultOptions.timeout = formattedTimeout;
+};
+
+envelope.clearTimeout = function() {
+	defaultOptions.timeout = null;
 };
 
 envelope.request = function(method, path, data, query, options, callback) {
@@ -96,7 +99,7 @@ envelope.request = function(method, path, data, query, options, callback) {
 	}
 
 	if(utilities.isEmptyString(method)) {
-		return callback(new Error("Missing or invalid method type: \"" + method + "\"."));
+		return callback(new Error("Missing or invalid method type."));
 	}
 
 	var formattedMethod = method.toUpperCase().trim();
@@ -189,12 +192,22 @@ envelope.request = function(method, path, data, query, options, callback) {
 	}
 
 	newOptions.callback = function(error, response, body) {
+		if(body === undefined) {
+			body = null;
+		}
+
 		if(utilities.isValid(error)) {
 			return callback(error, body, response);
 		}
 
-		if(utilities.isObject(body) && utilities.isValid(body.error)) {
-			return callback(body.error, body, response);
+		if(utilities.isObject(body)) {
+			if(utilities.isValid(body.error)) {
+				return callback(utilities.createError(utilities.isObject(body.error) ? body.error.message : body.error, response.statusCode), body, response);
+			}
+
+			if(response.statusCode >= 400 && response.statusCode < 600) {
+				return callback(utilities.createError(utilities.isNonEmptyString(body.message) ? body.message : JSON.stringify(body), response.statusCode), body, response)
+			}
 		}
 
 		return callback(null, body, response);
