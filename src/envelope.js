@@ -196,8 +196,14 @@ envelope.request = function(method, path, data, query, options, callback) {
 			return callback(error, body, response);
 		}
 
-		if(utilities.isObject(body) && utilities.isValid(body.error)) {
-			return callback(body.error, body, response);
+		if(utilities.isObject(body)) {
+			if(utilities.isValid(body.error)) {
+				return callback(utilities.createError(utilities.isObject(body.error) ? body.error.message : body.error, response.statusCode), body, response);
+			}
+
+			if(response.statusCode >= 400 && response.statusCode < 600) {
+				return callback(utilities.createError(utilities.isNonEmptyString(body.message) ? body.message : JSON.stringify(body), response.statusCode), body, response)
+			}
 		}
 
 		return callback(null, body, response);
