@@ -99,7 +99,10 @@ envelope.request = function(method, path, data, query, options, callback) {
 	}
 
 	if(utilities.isEmptyString(method)) {
-		return callback(new Error("Missing or invalid method type."));
+		var error = new Error("Missing or invalid method type.");
+		error.type = "request";
+		error.code = "invalid_method";
+		return callback(error, null, null);
 	}
 
 	var formattedMethod = method.toUpperCase().trim();
@@ -119,7 +122,10 @@ envelope.request = function(method, path, data, query, options, callback) {
 	}
 
 	if(!validMethod) {
-		return callback(new Error("Invalid method type: \"" + formattedMethod + "\" - expected one of: " + validMethods.join(", ") + "."));
+		var error = new Error("Unsupported method type: \"" + formattedMethod + "\" - expected one of: " + validMethods.join(", ") + ".");
+		error.type = "request";
+		error.code = "unsupported_method";
+		return callback(error, null, null);
 	}
 
 	var hasBody = formattedMethod === "POST" ||
@@ -196,17 +202,26 @@ envelope.request = function(method, path, data, query, options, callback) {
 			body = null;
 		}
 
-		if(utilities.isValid(error)) {
+		if(response === undefined) {
+			response = null;
+		}
+
+		if(utilities.isObject(error)) {
+			error.type = "server";
 			return callback(error, body, response);
 		}
 
 		if(utilities.isObject(body)) {
-			if(utilities.isValid(body.error)) {
-				return callback(utilities.createError(utilities.isObject(body.error) ? body.error.message : body.error, response.statusCode), body, response);
-			}
-
 			if(response.statusCode >= 400 && response.statusCode < 600) {
-				return callback(utilities.createError(utilities.isNonEmptyString(body.message) ? body.message : JSON.stringify(body), response.statusCode), body, response)
+				if(utilities.isValid(body.error)) {
+					var formattedError = utilities.createError(utilities.isObject(body.error) ? body.error.message : body.error, response.statusCode);
+					formattedError.type = "remote";
+					return callback(formattedError, null, response);
+				}
+
+				var formattedError = utilities.createError(utilities.isNonEmptyString(body.message) ? body.message : JSON.stringify(body), response.statusCode);
+				formattedError.type = "remote";
+				return callback(formattedError, null, response)
 			}
 		}
 
