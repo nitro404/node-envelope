@@ -192,6 +192,10 @@ envelope.request = function(method, path, data, query, options, callback) {
 	}
 
 	newOptions.callback = function(error, response, body) {
+		if(body === undefined) {
+			body = null;
+		}
+
 		if(utilities.isValid(error)) {
 			return callback(error, body, response);
 		}
