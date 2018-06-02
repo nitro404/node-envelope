@@ -31,14 +31,14 @@
   },
   "homepage": "https://github.com/nitro404/node-envelope#readme",
   "dependencies": {
-    "extra-utilities": "^1.1.0",
-    "request": "^2.83.0"
+    "extra-utilities": "^1.2.14",
+    "request": "^2.87.0"
   },
   "devDependencies": {
     "async": "^2.6.1",
     "body-parser": "^1.18.3",
     "chai": "^4.1.2",
     "express": "^4.16.3",
-    "gulp-fabricator": "^1.0.1"
+    "gulp-fabricator": "^1.0.2"
   }
 }
