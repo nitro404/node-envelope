@@ -109,7 +109,7 @@ router.get("/:id", function(req, res, next) {
 	var albumId = utilities.parseInteger(req.params.id);
 
 	if(!Number.isInteger(albumId)) {
-		return status(400).json({ message: "Empty or invalid album id." });
+		return res.status(400).json({ message: "Empty or invalid album id." });
 	}
 
 	return res.json(albums.find(function(album) {
@@ -124,7 +124,7 @@ router.post("/", function(req, res, next) {
 		formattedAlbum = utilities.formatValue(req.body, albumFormat, { throwErrors: true, verbose: false });
 	}
 	catch(error) {
-		return status(400).json(error);
+		return res.status(400).json({ message: error.message });
 	}
 
 	albums.push(formattedAlbum);
@@ -136,7 +136,7 @@ router.put("/:id", function(req, res, next) {
 	var albumId = utilities.parseInteger(req.params.id);
 
 	if(!Number.isInteger(albumId)) {
-		return status(400).json({ message: "Empty or invalid album id." });
+		return res.status(400).json({ message: "Empty or invalid album id." });
 	}
 
 	var albumIndex = -1;
@@ -149,15 +149,17 @@ router.put("/:id", function(req, res, next) {
 	}
 
 	if(albumIndex === -1) {
-		return status(404).json({ message: "Album with id " + albumId + "not found." });
+		return res.status(404).json({ message: "Album with id " + albumId + "not found." });
 	}
+
+	var formattedAlbum = null;
 
 	try {
 		formattedAlbum = utilities.formatValue(req.body, albumFormat, { throwErrors: true, verbose: false });
 		formattedAlbum.id = albumId;
 	}
 	catch(error) {
-		return status(400).json(error);
+		return res.status(400).json({ message: error.message });
 	}
 
 	albums[albumIndex] = formattedAlbum;
@@ -169,7 +171,7 @@ router.patch("/:id", function(req, res, next) {
 	var albumId = utilities.parseInteger(req.params.id);
 
 	if(!Number.isInteger(albumId)) {
-		return status(400).json({ message: "Empty or invalid album id." });
+		return res.status(400).json({ message: "Empty or invalid album id." });
 	}
 
 	var albumIndex = -1;
@@ -182,15 +184,17 @@ router.patch("/:id", function(req, res, next) {
 	}
 
 	if(albumIndex === -1) {
-		return status(404).json({ message: "Album with id " + albumId + "not found." });
+		return res.status(404).json({ message: "Album with id " + albumId + "not found." });
 	}
+
+	var formattedAlbum = null;
 
 	try {
 		formattedAlbum = utilities.formatValue(req.body, patchAlbumFormat, { throwErrors: true, verbose: false });
 		formattedAlbum.id = albumId;
 	}
 	catch(error) {
-		return status(400).json(error);
+		return res.status(400).json({ message: error.message });
 	}
 
 	utilities.merge(albums[albumIndex], formattedAlbum, false);
@@ -202,7 +206,7 @@ router.delete("/:id", function(req, res, next) {
 	var albumId = utilities.parseInteger(req.params.id);
 
 	if(!Number.isInteger(albumId)) {
-		return status(400).json({ message: "Empty or invalid album id." });
+		return res.status(400).json({ message: "Empty or invalid album id." });
 	}
 
 	var count = 0;
