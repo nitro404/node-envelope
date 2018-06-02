@@ -1,3 +1,5 @@
+"use strict";
+
 global.utilities = undefined;
 
 var envelope = require("../dist/envelope.js");
