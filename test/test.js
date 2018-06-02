@@ -249,11 +249,11 @@ app.get("/real-error", function(req, res, next) {
 });
 
 app.get("/fake-error", function(req, res, next) {
-	return res.json({ error: { message: "lies" } });
+	return res.status(456).json({ error: { message: "lies" } });
 });
 
 app.get("/basic-error", function(req, res, next) {
-	return res.json({ error: "dumb" });
+	return res.status(567).json({ error: "dumb" });
 });
 
 app.get("/bad-error", function(req, res, next) {
@@ -584,6 +584,10 @@ describe("Envelope", function() {
 			envelope.request([], "", function(error, data, response) {
 				expect(error).to.not.equal(null);
 				expect(error.message).to.equal("Missing or invalid method type.");
+				expect(error.type).to.equal("request");
+				expect(error.code).to.equal("invalid_method");
+				expect(data).to.equal(null);
+				expect(response).to.equal(null);
 
 				return callback();
 			});
@@ -592,7 +596,11 @@ describe("Envelope", function() {
 		it("should return an error for unsupported request method types", function(callback) {
 			envelope.request("BUTTS", "", function(error, data, response) {
 				expect(error).to.not.equal(null);
-				expect(error.message).to.equal("Invalid method type: \"BUTTS\" - expected one of: HEAD, GET, POST, PUT, PATCH, DELETE.");
+				expect(error.message).to.equal("Unsupported method type: \"BUTTS\" - expected one of: HEAD, GET, POST, PUT, PATCH, DELETE.");
+				expect(error.type).to.equal("request");
+				expect(error.code).to.equal("unsupported_method");
+				expect(data).to.equal(null);
+				expect(response).to.equal(null);
 
 				return callback();
 			});
@@ -611,6 +619,7 @@ describe("Envelope", function() {
 						return envelope.request("get", "test", function(error, data, response) {
 							expect(error).to.equal(null);
 							expect(data).to.deep.equal(result);
+							expect(response).to.not.equal(null);
 
 							return callback();
 						});
@@ -619,6 +628,7 @@ describe("Envelope", function() {
 						return envelope.request("get", "test", { dank: true }, function(error, data, response) {
 							expect(error).to.equal(null);
 							expect(data).to.deep.equal(result);
+							expect(response).to.not.equal(null);
 
 							return callback();
 						});
@@ -627,6 +637,7 @@ describe("Envelope", function() {
 						return envelope.request("get", "test", { dank: true }, { timeout: 8999 }, function(error, data, response) {
 							expect(error).to.equal(null);
 							expect(data).to.deep.equal(result);
+							expect(response).to.not.equal(null);
 
 							return callback();
 						});
@@ -649,6 +660,8 @@ describe("Envelope", function() {
 
 			return envelope.request("get", "test", null, null, { headers: { "Content-Type": "application/xml", "Accepts": "application/xml" } }, function(error, data, response) {
 				expect(error).to.equal(null);
+				expect(response).to.not.equal(null);
+				expect(response.statusCode).to.equal(200);
 				expect(data).to.deep.equal(result);
 
 				return callback();
@@ -665,6 +678,7 @@ describe("Envelope", function() {
 
 			return envelope.request("get", "auth", null, null, function(error, data, response) {
 				expect(error).to.equal(null);
+				expect(response).to.not.equal(null);
 				expect(response.statusCode).to.equal(200);
 				expect(data).to.deep.equal(result);
 
@@ -681,6 +695,7 @@ describe("Envelope", function() {
 
 			return envelope.request("get", "auth", null, null, { authorization: "pls" }, function(error, data, response) {
 				expect(error).to.equal(null);
+				expect(response).to.not.equal(null);
 				expect(response.statusCode).to.equal(200);
 				expect(data).to.deep.equal(result);
 
@@ -698,6 +713,7 @@ describe("Envelope", function() {
 
 			return envelope.request("get", "basic", null, null, function(error, data, response) {
 				expect(error).to.equal(null);
+				expect(response).to.not.equal(null);
 				expect(response.statusCode).to.equal(200);
 				expect(data).to.deep.equal(result);
 
@@ -710,6 +726,8 @@ describe("Envelope", function() {
 
 			return envelope.request("get", "basic", null, null, { authorization: "\t" }, function(error, data, response) {
 				expect(error).to.equal(null);
+				expect(data).to.equal(null);
+				expect(response).to.not.equal(null);
 				expect(response.statusCode).to.equal(401);
 
 				return callback();
@@ -721,7 +739,9 @@ describe("Envelope", function() {
 
 			return envelope.request("get", "auth", null, null, { authorization: "beg", headers: { "Authorization": "pls" } }, function(error, data, response) {
 				expect(error).to.equal(null);
+				expect(response).to.not.equal(null);
 				expect(response.statusCode).to.equal(401);
+				expect(data).to.equal(null);
 
 				return callback();
 			});
@@ -736,6 +756,8 @@ describe("Envelope", function() {
 
 			return envelope.request("get", "meme", null, null, { baseUrl: utilities.joinPaths(apiAddress, "nice") }, function(error, data, response) {
 				expect(error).to.equal(null);
+				expect(response).to.not.equal(null);
+				expect(response.statusCode).to.equal(200);
 				expect(data).to.deep.equal(result);
 
 				return callback();
@@ -748,6 +770,10 @@ describe("Envelope", function() {
 			return envelope.request("get", "real-error", function(error, data, response) {
 				expect(error).to.not.equal(null);
 				expect(error.message).to.equal("y u do dis");
+				expect(error.type).to.equal("remote");
+				expect(response).to.not.equal(null);
+				expect(response.statusCode).to.equal(500);
+				expect(data).to.equal(null);
 
 				return callback();
 			});
@@ -759,6 +785,10 @@ describe("Envelope", function() {
 			return envelope.request("get", "fake-error", function(error, data, response) {
 				expect(error).to.not.equal(null);
 				expect(error.message).to.equal("lies");
+				expect(error.type).to.equal("remote");
+				expect(response).to.not.equal(null);
+				expect(response.statusCode).to.equal(456);
+				expect(data).to.equal(null);
 
 				return callback();
 			});
@@ -770,6 +800,10 @@ describe("Envelope", function() {
 			return envelope.request("get", "basic-error", function(error, data, response) {
 				expect(error).to.not.equal(null);
 				expect(error.message).to.equal("dumb");
+				expect(error.type).to.equal("remote");
+				expect(response).to.not.equal(null);
+				expect(response.statusCode).to.equal(567);
+				expect(data).to.equal(null);
 
 				return callback();
 			});
@@ -781,6 +815,10 @@ describe("Envelope", function() {
 			return envelope.request("get", "bad-error", function(error, data, response) {
 				expect(error).to.not.equal(null);
 				expect(error.message).to.equal("{\"u\":\"wot\"}");
+				expect(error.type).to.equal("remote");
+				expect(response).to.not.equal(null);
+				expect(response.statusCode).to.equal(420);
+				expect(data).to.equal(null);
 
 				return callback();
 			});
@@ -792,6 +830,9 @@ describe("Envelope", function() {
 			return envelope.request("get", "test", function(error, data, response) {
 				expect(error).to.not.equal(null);
 				expect(error instanceof Error).to.equal(true);
+				expect(error.type).to.equal("server");
+				expect(response).to.equal(null);
+				expect(data).to.equal(null);
 
 				return callback();
 			});
@@ -807,6 +848,8 @@ describe("Envelope", function() {
 
 			return envelope.request("get", "no-response", function(error, data, response) {
 				expect(error).to.not.equal(null);
+				expect(error.type).to.equal("server");
+				expect(response).to.equal(null);
 				expect(data).to.equal(null)
 
 				var duration = utilities.compareDates(new Date(), startTime);
