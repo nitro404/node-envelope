@@ -11,6 +11,10 @@ var defaultOptions = {
 	timeout: 30000
 };
 
+envelope.hasBaseUrl = function() {
+	return utilities.isNonEmptyString(defaultOptions.baseUrl);
+};
+
 envelope.getBaseUrl = function() {
 	return defaultOptions.baseUrl;
 };
