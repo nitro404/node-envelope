@@ -31,12 +31,12 @@ envelope.clearBaseUrl = function() {
 	defaultOptions.baseUrl = null;
 };
 
-envelope.getAuthorization = function() {
-	return defaultOptions.authorization;
-};
-
 envelope.hasAuthorization = function() {
 	return utilities.isNonEmptyString(defaultOptions.authorization);
+};
+
+envelope.getAuthorization = function() {
+	return defaultOptions.authorization;
 };
 
 envelope.setAuthorizationToken = function(token) {
