@@ -48,7 +48,7 @@ envelope.setAuthorizationToken = function(token) {
 envelope.setBasicAuthorization = function(userName, password) {
 	if(utilities.isEmptyString(userName) || utilities.isEmptyString(password)) { return; }
 
-	defaultOptions.authorization = "Basic " + btoa(userName + ":" + password);
+	defaultOptions.authorization = "Basic " + Buffer.from(userName + ":" + password).toString("base64");
 };
 
 envelope.clearAuthorization = function() {
