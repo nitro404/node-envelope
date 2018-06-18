@@ -1,9 +1,11 @@
+"use strict";
+
 var request = require("request");
 var utilities = require("extra-utilities");
 
 var envelope = { };
 
-var validMethods = ["HEAD", "GET", "POST", "PUT", "PATCH", "DELETE"]
+var validMethods = ["HEAD", "GET", "POST", "PUT", "PATCH", "DELETE"];
 
 var defaultOptions = {
 	baseUrl: null,
@@ -114,7 +116,7 @@ envelope.request = function(method, path, data, query, options, callback) {
 
 	var validMethod = false;
 
-	for(var i=0;i<validMethods.length;i++) {
+	for(var i = 0; i < validMethods.length; i++) {
 		if(formattedMethod === validMethods[i]) {
 			validMethod = true;
 			break;
@@ -175,25 +177,25 @@ envelope.request = function(method, path, data, query, options, callback) {
 		newOptions.headers["Content-Type"] = "application/json";
 	}
 
-	if(utilities.isEmptyString(newOptions.headers["Accepts"])) {
-		newOptions.headers["Accepts"] = "application/json";
+	if(utilities.isEmptyString(newOptions.headers.Accepts)) {
+		newOptions.headers.Accepts = "application/json";
 	}
 
 	if(utilities.isValid(newOptions.authorization)) {
 		if(utilities.isNonEmptyString(newOptions.authorization)) {
-			if(utilities.isNonEmptyString(newOptions.headers["Authorization"])) {
+			if(utilities.isNonEmptyString(newOptions.headers.Authorization)) {
 				console.error("Authorization specified in header data is being overridden by authorization at root level of options.");
 			}
 
-			newOptions.headers["Authorization"] = newOptions.authorization;
+			newOptions.headers.Authorization = newOptions.authorization;
 		}
 
 		delete newOptions.authorization;
 	}
 
-	if(utilities.isEmptyString(newOptions.headers["Authorization"])) {
+	if(utilities.isEmptyString(newOptions.headers.Authorization)) {
 		if(utilities.isNonEmptyString(defaultOptions.authorization)) {
-			newOptions.headers["Authorization"] = defaultOptions.authorization;
+			newOptions.headers.Authorization = defaultOptions.authorization;
 		}
 	}
 
@@ -221,7 +223,7 @@ envelope.request = function(method, path, data, query, options, callback) {
 
 				var formattedError = utilities.createError(utilities.isNonEmptyString(body.message) ? body.message : JSON.stringify(body), response.statusCode);
 				formattedError.type = "remote";
-				return callback(formattedError, null, response)
+				return callback(formattedError, null, response);
 			}
 		}
 
