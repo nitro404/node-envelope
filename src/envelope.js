@@ -1,13 +1,13 @@
 "use strict";
 
-var request = require("request");
-var utilities = require("extra-utilities");
+const request = require("request");
+const utilities = require("extra-utilities");
 
-var envelope = { };
+const envelope = { };
 
-var validMethods = ["HEAD", "GET", "POST", "PUT", "PATCH", "DELETE"];
+const validMethods = ["HEAD", "GET", "POST", "PUT", "PATCH", "DELETE"];
 
-var defaultOptions = {
+const defaultOptions = {
 	baseUrl: null,
 	authorization: null,
 	timeout: 30000
@@ -66,7 +66,7 @@ envelope.getTimeout = function() {
 };
 
 envelope.setTimeout = function(timeout) {
-	var formattedTimeout = utilities.parseInteger(timeout);
+	const formattedTimeout = utilities.parseInteger(timeout);
 
 	if(utilities.isInvalidNumber(formattedTimeout) || formattedTimeout < 1) {
 		return;
@@ -101,22 +101,22 @@ envelope.request = function(method, path, data, query, options, callback) {
 	}
 
 	if(utilities.isEmptyString(method)) {
-		var error = new Error("Missing or invalid method type.");
+		const error = new Error("Missing or invalid method type.");
 		error.type = "request";
 		error.code = "invalid_method";
 		return callback(error, null, null);
 	}
 
-	var formattedMethod = method.toUpperCase().trim();
-	var isUpload = formattedMethod === "UPLOAD";
+	let formattedMethod = method.toUpperCase().trim();
+	const isUpload = formattedMethod === "UPLOAD";
 
 	if(isUpload) {
 		formattedMethod = "POST";
 	}
 
-	var validMethod = false;
+	let validMethod = false;
 
-	for(var i = 0; i < validMethods.length; i++) {
+	for(let i = 0; i < validMethods.length; i++) {
 		if(formattedMethod === validMethods[i]) {
 			validMethod = true;
 			break;
@@ -124,13 +124,13 @@ envelope.request = function(method, path, data, query, options, callback) {
 	}
 
 	if(!validMethod) {
-		var error = new Error("Unsupported method type: \"" + formattedMethod + "\" - expected one of: " + validMethods.join(", ") + ".");
+		const error = new Error("Unsupported method type: \"" + formattedMethod + "\" - expected one of: " + validMethods.join(", ") + ".");
 		error.type = "request";
 		error.code = "unsupported_method";
 		return callback(error, null, null);
 	}
 
-	var hasBody = formattedMethod === "POST" ||
+	const hasBody = formattedMethod === "POST" ||
 				  formattedMethod === "PUT" ||
 				  formattedMethod === "PATCH";
 
@@ -140,7 +140,7 @@ envelope.request = function(method, path, data, query, options, callback) {
 		data = null;
 	}
 
-	var newOptions = utilities.isObjectStrict(options) ? utilities.clone(options) : { };
+	const newOptions = utilities.isObjectStrict(options) ? utilities.clone(options) : { };
 	newOptions.method = formattedMethod;
 	newOptions.json = true;
 
@@ -216,12 +216,12 @@ envelope.request = function(method, path, data, query, options, callback) {
 		if(utilities.isObject(body)) {
 			if(response.statusCode >= 400 && response.statusCode < 600) {
 				if(utilities.isValid(body.error)) {
-					var formattedError = utilities.createError(utilities.isObject(body.error) ? body.error.message : body.error, response.statusCode);
+					const formattedError = utilities.createError(utilities.isObject(body.error) ? body.error.message : body.error, response.statusCode);
 					formattedError.type = "remote";
 					return callback(formattedError, null, response);
 				}
 
-				var formattedError = utilities.createError(utilities.isNonEmptyString(body.message) ? body.message : JSON.stringify(body), response.statusCode);
+				const formattedError = utilities.createError(utilities.isNonEmptyString(body.message) ? body.message : JSON.stringify(body), response.statusCode);
 				formattedError.type = "remote";
 				return callback(formattedError, null, response);
 			}
@@ -258,14 +258,14 @@ envelope.delete = function(path, data, query, options, callback) {
 };
 
 envelope.upload = function(path, data, query, options, file, callback) {
-	var fileDescriptor = new FormData();
+	const fileDescriptor = new FormData();
 
 	if(utilities.isValid(file)) {
 		fileDescriptor.append("file", file);
 	}
 
 	if(utilities.isObjectStrict(data)) {
-		for(var attribute in data) {
+		for(let attribute in data) {
 			if(attribute === "file") {
 				continue;
 			}

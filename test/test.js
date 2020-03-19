@@ -2,30 +2,30 @@
 
 global.utilities = undefined;
 
-var envelope = require("../dist/envelope.js");
-var async = require("async");
-var utilities = require("extra-utilities");
-var chai = require("chai");
-var expect = chai.expect;
-var express = require("express");
-var app = express();
-var router = express.Router();
-var bodyParser = require("body-parser");
+const envelope = require("../src/envelope.js");
+const async = require("async");
+const utilities = require("extra-utilities");
+const chai = require("chai");
+const expect = chai.expect;
+const express = require("express");
+const app = express();
+const router = express.Router();
+const bodyParser = require("body-parser");
 
-var server = null;
-var port = 7357;
-var apiAddress = "http://127.0.0.1:" + port;
-var idCounter = 0;
-var albums = [];
+let server = null;
+const port = 7357;
+const apiAddress = "http://127.0.0.1:" + port;
+let idCounter = 0;
+const albums = [];
 
-var basicCredentials = {
+const basicCredentials = {
 	userName: "fake",
 	password: "news"
 };
 
-var basicAuthorization = "Basic " + Buffer.from(basicCredentials.userName + ":" + basicCredentials.password).toString("base64");
+const basicAuthorization = "Basic " + Buffer.from(basicCredentials.userName + ":" + basicCredentials.password).toString("base64");
 
-var albumFormat = {
+const albumFormat = {
 	type: "object",
 	strict: true,
 	removeExtra: true,
@@ -70,7 +70,7 @@ var albumFormat = {
 	}
 };
 
-var patchAlbumFormat = utilities.clone(albumFormat);
+const patchAlbumFormat = utilities.clone(albumFormat);
 delete patchAlbumFormat.required;
 delete patchAlbumFormat.format.id;
 delete patchAlbumFormat.format.artist.required;
@@ -83,15 +83,15 @@ app.use(bodyParser.text({ type: "text/html" }));
 app.use(bodyParser.urlencoded({ extended: true }));
 
 router.head("/:id", function(req, res, next) {
-	var albumId = utilities.parseInteger(req.params.id);
+	const albumId = utilities.parseInteger(req.params.id);
 
 	if(!Number.isInteger(albumId)) {
 		return res.status(400).json({ message: "Empty or invalid album id." });
 	}
 
-	var albumIndex = -1;
+	let albumIndex = -1;
 
-	for(var i = 0; i < albums.length; i++) {
+	for(let i = 0; i < albums.length; i++) {
 		if(albums[i].id === albumId) {
 			albumIndex = i;
 			break;
@@ -106,7 +106,7 @@ router.get("/", function(req, res, next) {
 });
 
 router.get("/:id", function(req, res, next) {
-	var albumId = utilities.parseInteger(req.params.id);
+	const albumId = utilities.parseInteger(req.params.id);
 
 	if(!Number.isInteger(albumId)) {
 		return res.status(400).json({ message: "Empty or invalid album id." });
@@ -118,7 +118,7 @@ router.get("/:id", function(req, res, next) {
 });
 
 router.post("/", function(req, res, next) {
-	var formattedAlbum = null;
+	let formattedAlbum = null;
 
 	try {
 		formattedAlbum = utilities.formatValue(req.body, albumFormat, { throwErrors: true, verbose: false });
@@ -133,15 +133,15 @@ router.post("/", function(req, res, next) {
 });
 
 router.put("/:id", function(req, res, next) {
-	var albumId = utilities.parseInteger(req.params.id);
+	const albumId = utilities.parseInteger(req.params.id);
 
 	if(!Number.isInteger(albumId)) {
 		return res.status(400).json({ message: "Empty or invalid album id." });
 	}
 
-	var albumIndex = -1;
+	let albumIndex = -1;
 
-	for(var i = 0; i < albums.length; i++) {
+	for(let i = 0; i < albums.length; i++) {
 		if(albums[i].id === albumId) {
 			albumIndex = i;
 			break;
@@ -152,7 +152,7 @@ router.put("/:id", function(req, res, next) {
 		return res.status(404).json({ message: "Album with id " + albumId + "not found." });
 	}
 
-	var formattedAlbum = null;
+	let formattedAlbum = null;
 
 	try {
 		formattedAlbum = utilities.formatValue(req.body, albumFormat, { throwErrors: true, verbose: false });
@@ -168,15 +168,15 @@ router.put("/:id", function(req, res, next) {
 });
 
 router.patch("/:id", function(req, res, next) {
-	var albumId = utilities.parseInteger(req.params.id);
+	const albumId = utilities.parseInteger(req.params.id);
 
 	if(!Number.isInteger(albumId)) {
 		return res.status(400).json({ message: "Empty or invalid album id." });
 	}
 
-	var albumIndex = -1;
+	let albumIndex = -1;
 
-	for(var i = 0; i < albums.length; i++) {
+	for(let i = 0; i < albums.length; i++) {
 		if(albums[i].id === albumId) {
 			albumIndex = i;
 			break;
@@ -187,7 +187,7 @@ router.patch("/:id", function(req, res, next) {
 		return res.status(404).json({ message: "Album with id " + albumId + "not found." });
 	}
 
-	var formattedAlbum = null;
+	let formattedAlbum = null;
 
 	try {
 		formattedAlbum = utilities.formatValue(req.body, patchAlbumFormat, { throwErrors: true, verbose: false });
@@ -203,15 +203,15 @@ router.patch("/:id", function(req, res, next) {
 });
 
 router.delete("/:id", function(req, res, next) {
-	var albumId = utilities.parseInteger(req.params.id);
+	const albumId = utilities.parseInteger(req.params.id);
 
 	if(!Number.isInteger(albumId)) {
 		return res.status(400).json({ message: "Empty or invalid album id." });
 	}
 
-	var count = 0;
+	let count = 0;
 
-	for(var i = 0; i < albums.length; i++) {
+	for(let i = 0; i < albums.length; i++) {
 		if(albums[i].id == albumId) {
 			albums.splice(i, 1);
 			count++;
@@ -294,7 +294,7 @@ describe("Envelope", function() {
 		});
 
 		it("should return true if the default base url is set", function() {
-			var baseUrl = "https://api.discogs.com";
+			const baseUrl = "https://api.discogs.com";
 
 			expect(envelope.hasBaseUrl()).to.equal(false);
 
@@ -310,7 +310,7 @@ describe("Envelope", function() {
 		});
 
 		it("should return the default base url value", function() {
-			var baseUrl = "https://api.discogs.com";
+			const baseUrl = "https://api.discogs.com";
 
 			expect(envelope.getBaseUrl()).to.not.equal(baseUrl);
 
@@ -326,7 +326,7 @@ describe("Envelope", function() {
 		});
 
 		it("should set the default base url value", function() {
-			var baseUrl = "http://musicbrainz.org/ws/2";
+			const baseUrl = "http://musicbrainz.org/ws/2";
 
 			expect(envelope.getBaseUrl()).to.not.equal(baseUrl);
 
@@ -336,7 +336,7 @@ describe("Envelope", function() {
 		});
 
 		it("should not change the default base url if the value is invalid", function() {
-			var baseUrl = "http://api.steampowered.com";
+			const baseUrl = "http://api.steampowered.com";
 
 			expect(envelope.getBaseUrl()).to.not.equal(baseUrl);
 
@@ -356,7 +356,7 @@ describe("Envelope", function() {
 		});
 
 		it("should clear the default base url", function() {
-			var baseUrl = "https://api.octranspo1.com/v1.2";
+			const baseUrl = "https://api.octranspo1.com/v1.2";
 
 			expect(envelope.getBaseUrl()).to.not.equal(baseUrl);
 
@@ -376,7 +376,7 @@ describe("Envelope", function() {
 		});
 
 		it("should return true only if the default authorization token is set", function() {
-			var authorization = "nicememe420";
+			const authorization = "nicememe420";
 
 			expect(envelope.hasAuthorization()).to.equal(false);
 
@@ -392,7 +392,7 @@ describe("Envelope", function() {
 		});
 
 		it("should return the default authorization token", function() {
-			var authorization = "nicememe420";
+			const authorization = "nicememe420";
 
 			expect(envelope.getAuthorization()).to.not.equal(authorization);
 
@@ -408,7 +408,7 @@ describe("Envelope", function() {
 		});
 
 		it("should set a simple default authorization token", function() {
-			var authorization = "dankmemes69";
+			const authorization = "dankmemes69";
 
 			expect(envelope.getAuthorization()).to.not.equal(authorization);
 
@@ -418,7 +418,7 @@ describe("Envelope", function() {
 		});
 
 		it("should not change the default authorization token if the value is invalid", function() {
-			var authorization = "surprise-ketchup";
+			const authorization = "surprise-ketchup";
 
 			expect(envelope.getAuthorization()).to.not.equal(authorization);
 
@@ -438,12 +438,12 @@ describe("Envelope", function() {
 		});
 
 		it("should set a default authorization token using basic authentication credentials", function() {
-			var credentials = {
+			const credentials = {
 				userName: "nitro404",
 				password: "ayylmao7331"
 			};
 
-			var authToken = "Basic " + Buffer.from(credentials.userName + ":" + credentials.password).toString("base64");
+			const authToken = "Basic " + Buffer.from(credentials.userName + ":" + credentials.password).toString("base64");
 
 			expect(envelope.getAuthorization()).to.not.equal(authToken);
 
@@ -453,12 +453,12 @@ describe("Envelope", function() {
 		});
 
 		it("should not change the default authorization token if the credentials are invalid", function() {
-			var credentials = {
+			const credentials = {
 				userName: "nitro404",
 				password: "ayylmao7331"
 			};
 
-			var authToken = "Basic " + Buffer.from(credentials.userName + ":" + credentials.password).toString("base64");
+			const authToken = "Basic " + Buffer.from(credentials.userName + ":" + credentials.password).toString("base64");
 
 			expect(envelope.getAuthorization()).to.not.equal(authToken);
 
@@ -482,9 +482,9 @@ describe("Envelope", function() {
 		});
 
 		it("should clear the default authorization token", function() {
-			var authorization = "super_secret";
+			const authorization = "super_secret";
 
-			var credentials = {
+			const credentials = {
 				userName: "noscopemaster",
 				password: "123456"
 			};
@@ -515,7 +515,7 @@ describe("Envelope", function() {
 		});
 
 		it("should return true if the default timeout is set", function() {
-			var timeout = 1;
+			const timeout = 1;
 
 			expect(envelope.hasTimeout()).to.equal(false);
 
@@ -531,7 +531,7 @@ describe("Envelope", function() {
 		});
 
 		it("should return the default timeout value", function() {
-			var timeout = 9001;
+			const timeout = 9001;
 
 			expect(envelope.getTimeout()).to.equal(null);
 
@@ -547,7 +547,7 @@ describe("Envelope", function() {
 		});
 
 		it("should set the default timeout value", function() {
-			var timeout = 1337;
+			const timeout = 1337;
 
 			expect(envelope.getTimeout()).to.equal(null);
 
@@ -557,7 +557,7 @@ describe("Envelope", function() {
 		});
 
 		it("should not change the default timeout if the value is invalid", function() {
-			var timeout = 161;
+			const timeout = 161;
 
 			expect(envelope.getTimeout()).to.equal(null);
 
@@ -577,7 +577,7 @@ describe("Envelope", function() {
 		});
 
 		it("should throw an error if no callback function is specified", function() {
-			var thrownError = null;
+			let thrownError = null;
 
 			try { envelope.request(); }
 			catch(error) { thrownError = error; }
@@ -613,7 +613,7 @@ describe("Envelope", function() {
 		});
 
 		it("should reorganize arguments if the callback is in a different location", function(callback) {
-			var result = {
+			const result = {
 				nice: "meme"
 			};
 
@@ -658,7 +658,7 @@ describe("Envelope", function() {
 		});
 
 		it("should allow for custom headers to be set in options", function(callback) {
-			var result = {
+			const result = {
 				nice: "meme"
 			};
 
@@ -675,7 +675,7 @@ describe("Envelope", function() {
 		});
 
 		it("should use the default authorization token when specified", function(callback) {
-			var result = {
+			const result = {
 				ok: "fine"
 			};
 
@@ -693,7 +693,7 @@ describe("Envelope", function() {
 		});
 
 		it("should allow for authorization tokens to be set in options", function(callback) {
-			var result = {
+			const result = {
 				ok: "fine"
 			};
 
@@ -710,7 +710,7 @@ describe("Envelope", function() {
 		});
 
 		it("should use the default basic authorization credentials when specified", function(callback) {
-			var result = {
+			const result = {
 				no: "thx"
 			};
 
@@ -754,7 +754,7 @@ describe("Envelope", function() {
 		});
 
 		it("should allow for the default base url to be overridden in the options headers", function(callback) {
-			var result = {
+			const result = {
 				surprise: "ketchup"
 			};
 
@@ -845,12 +845,12 @@ describe("Envelope", function() {
 		});
 
 		it("should time out requests that take longer than a specified amount of time", function(callback) {
-			var expectedDuration = 1337;
+			const expectedDuration = 1337;
 
 			envelope.setBaseUrl(apiAddress);
 			envelope.setTimeout(expectedDuration);
 
-			var startTime = new Date();
+			const startTime = new Date();
 
 			return envelope.request("get", "no-response", function(error, data, response) {
 				expect(error).to.not.equal(null);
@@ -858,7 +858,7 @@ describe("Envelope", function() {
 				expect(response).to.equal(null);
 				expect(data).to.equal(null)
 
-				var duration = utilities.compareDates(new Date(), startTime);
+				const duration = utilities.compareDates(new Date(), startTime);
 
 				expect(duration > expectedDuration - 100 && duration < expectedDuration + 100).to.equal(true);
 
@@ -942,7 +942,7 @@ describe("Envelope", function() {
 				{
 					artist: "Flamingosis",
 					year: "2017",
-					album: "A GROOVY THING"
+					album: "a groovy thing"
 				},
 				null,
 				{

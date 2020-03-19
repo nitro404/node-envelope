@@ -1,9 +1,9 @@
-var fabricator = require("gulp-fabricator");
+const fabricator = require("gulp-fabricator");
 
 fabricator.setup({
 	name: "Envelope",
 	build: {
-		transformation: "None"
+		enabled: false
 	},
 	base: {
 		directory: __dirname
