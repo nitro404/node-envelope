@@ -30,7 +30,7 @@
   },
   "homepage": "https://github.com/nitro404/node-envelope#readme",
   "dependencies": {
-    "extra-utilities": "^1.3.4",
+    "extra-utilities": "^1.3.7",
     "request": "^2.88.2"
   },
   "devDependencies": {
